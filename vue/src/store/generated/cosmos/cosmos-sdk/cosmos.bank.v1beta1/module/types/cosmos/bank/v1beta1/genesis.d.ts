@@ -1,6 +1,6 @@
-import { Params, Metadata } from '../../../cosmos/bank/v1beta1/bank';
-import { Coin } from '../../../cosmos/base/v1beta1/coin';
-import { Writer, Reader } from 'protobufjs/minimal';
+import { Params, Metadata } from "../../../cosmos/bank/v1beta1/bank";
+import { Coin } from "../../../cosmos/base/v1beta1/coin";
+import { Writer, Reader } from "protobufjs/minimal";
 export declare const protobufPackage = "cosmos.bank.v1beta1";
 /** GenesisState defines the bank module's genesis state. */
 export interface GenesisState {
@@ -8,7 +8,10 @@ export interface GenesisState {
     params: Params | undefined;
     /** balances is an array containing the balances of all the accounts. */
     balances: Balance[];
-    /** supply represents the total supply. */
+    /**
+     * supply represents the total supply. If it is left empty, then supply will be calculated based on the provided
+     * balances. Otherwise, it will be used to validate that the sum of the balances equals this amount.
+     */
     supply: Coin[];
     /** denom_metadata defines the metadata of the differents coins. */
     denomMetadata: Metadata[];

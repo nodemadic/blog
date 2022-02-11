@@ -130,7 +130,7 @@ export class HttpClient {
     }
 }
 /**
- * @title cosmos/bank/v1beta1/bank.proto
+ * @title cosmos/bank/v1beta1/authz.proto
  * @version version not set
  */
 export class Api extends HttpClient {
@@ -157,11 +157,12 @@ export class Api extends HttpClient {
          * @tags Query
          * @name QueryBalance
          * @summary Balance queries the balance of a single coin for a single account.
-         * @request GET:/cosmos/bank/v1beta1/balances/{address}/{denom}
+         * @request GET:/cosmos/bank/v1beta1/balances/{address}/by_denom
          */
-        this.queryBalance = (address, denom, params = {}) => this.request({
-            path: `/cosmos/bank/v1beta1/balances/${address}/${denom}`,
+        this.queryBalance = (address, query, params = {}) => this.request({
+            path: `/cosmos/bank/v1beta1/balances/${address}/by_denom`,
             method: "GET",
+            query: query,
             format: "json",
             ...params,
         });
@@ -216,9 +217,10 @@ export class Api extends HttpClient {
          * @summary TotalSupply queries the total supply of all coins.
          * @request GET:/cosmos/bank/v1beta1/supply
          */
-        this.queryTotalSupply = (params = {}) => this.request({
+        this.queryTotalSupply = (query, params = {}) => this.request({
             path: `/cosmos/bank/v1beta1/supply`,
             method: "GET",
+            query: query,
             format: "json",
             ...params,
         });

@@ -1,7 +1,7 @@
-import { Reader, Writer } from 'protobufjs/minimal';
-import { Coin } from '../../../cosmos/base/v1beta1/coin';
-import { PageRequest, PageResponse } from '../../../cosmos/base/query/v1beta1/pagination';
-import { Params, Metadata } from '../../../cosmos/bank/v1beta1/bank';
+import { Reader, Writer } from "protobufjs/minimal";
+import { Coin } from "../../../cosmos/base/v1beta1/coin";
+import { PageRequest, PageResponse } from "../../../cosmos/base/query/v1beta1/pagination";
+import { Params, Metadata } from "../../../cosmos/bank/v1beta1/bank";
 export declare const protobufPackage = "cosmos.bank.v1beta1";
 /** QueryBalanceRequest is the request type for the Query/Balance RPC method. */
 export interface QueryBalanceRequest {
@@ -37,6 +37,12 @@ export interface QueryAllBalancesResponse {
  * method.
  */
 export interface QueryTotalSupplyRequest {
+    /**
+     * pagination defines an optional pagination for the request.
+     *
+     * Since: cosmos-sdk 0.43
+     */
+    pagination: PageRequest | undefined;
 }
 /**
  * QueryTotalSupplyResponse is the response type for the Query/TotalSupply RPC
@@ -45,6 +51,12 @@ export interface QueryTotalSupplyRequest {
 export interface QueryTotalSupplyResponse {
     /** supply is the supply of the coins */
     supply: Coin[];
+    /**
+     * pagination defines the pagination in the response.
+     *
+     * Since: cosmos-sdk 0.43
+     */
+    pagination: PageResponse | undefined;
 }
 /** QuerySupplyOfRequest is the request type for the Query/SupplyOf RPC method. */
 export interface QuerySupplyOfRequest {
@@ -120,11 +132,11 @@ export declare const QueryAllBalancesResponse: {
     fromPartial(object: DeepPartial<QueryAllBalancesResponse>): QueryAllBalancesResponse;
 };
 export declare const QueryTotalSupplyRequest: {
-    encode(_: QueryTotalSupplyRequest, writer?: Writer): Writer;
+    encode(message: QueryTotalSupplyRequest, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): QueryTotalSupplyRequest;
-    fromJSON(_: any): QueryTotalSupplyRequest;
-    toJSON(_: QueryTotalSupplyRequest): unknown;
-    fromPartial(_: DeepPartial<QueryTotalSupplyRequest>): QueryTotalSupplyRequest;
+    fromJSON(object: any): QueryTotalSupplyRequest;
+    toJSON(message: QueryTotalSupplyRequest): unknown;
+    fromPartial(object: DeepPartial<QueryTotalSupplyRequest>): QueryTotalSupplyRequest;
 };
 export declare const QueryTotalSupplyResponse: {
     encode(message: QueryTotalSupplyResponse, writer?: Writer): Writer;

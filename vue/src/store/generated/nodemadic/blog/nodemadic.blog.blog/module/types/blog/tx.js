@@ -1,16 +1,17 @@
 /* eslint-disable */
-import { Reader, Writer } from 'protobufjs/minimal';
-export const protobufPackage = 'nodemadic.blog.blog';
-const baseMsgCreatePost = { creator: '', title: '', body: '' };
+import { Reader, util, configure, Writer } from "protobufjs/minimal";
+import * as Long from "long";
+export const protobufPackage = "nodemadic.blog.blog";
+const baseMsgCreatePost = { creator: "", title: "", body: "" };
 export const MsgCreatePost = {
     encode(message, writer = Writer.create()) {
-        if (message.creator !== '') {
+        if (message.creator !== "") {
             writer.uint32(10).string(message.creator);
         }
-        if (message.title !== '') {
+        if (message.title !== "") {
             writer.uint32(18).string(message.title);
         }
-        if (message.body !== '') {
+        if (message.body !== "") {
             writer.uint32(26).string(message.body);
         }
         return writer;
@@ -44,19 +45,19 @@ export const MsgCreatePost = {
             message.creator = String(object.creator);
         }
         else {
-            message.creator = '';
+            message.creator = "";
         }
         if (object.title !== undefined && object.title !== null) {
             message.title = String(object.title);
         }
         else {
-            message.title = '';
+            message.title = "";
         }
         if (object.body !== undefined && object.body !== null) {
             message.body = String(object.body);
         }
         else {
-            message.body = '';
+            message.body = "";
         }
         return message;
     },
@@ -73,26 +74,29 @@ export const MsgCreatePost = {
             message.creator = object.creator;
         }
         else {
-            message.creator = '';
+            message.creator = "";
         }
         if (object.title !== undefined && object.title !== null) {
             message.title = object.title;
         }
         else {
-            message.title = '';
+            message.title = "";
         }
         if (object.body !== undefined && object.body !== null) {
             message.body = object.body;
         }
         else {
-            message.body = '';
+            message.body = "";
         }
         return message;
-    }
+    },
 };
-const baseMsgCreatePostResponse = {};
+const baseMsgCreatePostResponse = { id: 0 };
 export const MsgCreatePostResponse = {
-    encode(_, writer = Writer.create()) {
+    encode(message, writer = Writer.create()) {
+        if (message.id !== 0) {
+            writer.uint32(8).uint64(message.id);
+        }
         return writer;
     },
     decode(input, length) {
@@ -102,6 +106,9 @@ export const MsgCreatePostResponse = {
         while (reader.pos < end) {
             const tag = reader.uint32();
             switch (tag >>> 3) {
+                case 1:
+                    message.id = longToNumber(reader.uint64());
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -109,18 +116,31 @@ export const MsgCreatePostResponse = {
         }
         return message;
     },
-    fromJSON(_) {
+    fromJSON(object) {
         const message = { ...baseMsgCreatePostResponse };
+        if (object.id !== undefined && object.id !== null) {
+            message.id = Number(object.id);
+        }
+        else {
+            message.id = 0;
+        }
         return message;
     },
-    toJSON(_) {
+    toJSON(message) {
         const obj = {};
+        message.id !== undefined && (obj.id = message.id);
         return obj;
     },
-    fromPartial(_) {
+    fromPartial(object) {
         const message = { ...baseMsgCreatePostResponse };
+        if (object.id !== undefined && object.id !== null) {
+            message.id = object.id;
+        }
+        else {
+            message.id = 0;
+        }
         return message;
-    }
+    },
 };
 export class MsgClientImpl {
     constructor(rpc) {
@@ -128,7 +148,28 @@ export class MsgClientImpl {
     }
     CreatePost(request) {
         const data = MsgCreatePost.encode(request).finish();
-        const promise = this.rpc.request('nodemadic.blog.blog.Msg', 'CreatePost', data);
+        const promise = this.rpc.request("nodemadic.blog.blog.Msg", "CreatePost", data);
         return promise.then((data) => MsgCreatePostResponse.decode(new Reader(data)));
     }
+}
+var globalThis = (() => {
+    if (typeof globalThis !== "undefined")
+        return globalThis;
+    if (typeof self !== "undefined")
+        return self;
+    if (typeof window !== "undefined")
+        return window;
+    if (typeof global !== "undefined")
+        return global;
+    throw "Unable to locate global object";
+})();
+function longToNumber(long) {
+    if (long.gt(Number.MAX_SAFE_INTEGER)) {
+        throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+    }
+    return long.toNumber();
+}
+if (util.Long !== Long) {
+    util.Long = Long;
+    configure();
 }

@@ -5,6 +5,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+const TypeMsgCreatePost = "create_post"
+
 var _ sdk.Msg = &MsgCreatePost{}
 
 func NewMsgCreatePost(creator string, title string, body string) *MsgCreatePost {
@@ -20,7 +22,7 @@ func (msg *MsgCreatePost) Route() string {
 }
 
 func (msg *MsgCreatePost) Type() string {
-	return "CreatePost"
+	return TypeMsgCreatePost
 }
 
 func (msg *MsgCreatePost) GetSigners() []sdk.AccAddress {

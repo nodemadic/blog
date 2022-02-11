@@ -16,10 +16,10 @@ const (
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_blog"
 
-	// this line is used by starport scaffolding # ibc/keys/name
+	// Keep track of the index of posts
+	PostKey      = "Post-value-"
+	PostCountKey = "Post-count-"
 )
-
-// this line is used by starport scaffolding # ibc/keys/port
 
 func KeyPrefix(p string) []byte {
 	return []byte(p)

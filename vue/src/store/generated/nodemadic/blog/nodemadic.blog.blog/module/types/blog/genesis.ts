@@ -1,50 +1,72 @@
 /* eslint-disable */
-import { Writer, Reader } from 'protobufjs/minimal'
+import { Params } from "../blog/params";
+import { Writer, Reader } from "protobufjs/minimal";
 
-export const protobufPackage = 'nodemadic.blog.blog'
+export const protobufPackage = "nodemadic.blog.blog";
 
 /** GenesisState defines the blog module's genesis state. */
-export interface GenesisState {}
+export interface GenesisState {
+  /** this line is used by starport scaffolding # genesis/proto/state */
+  params: Params | undefined;
+}
 
-const baseGenesisState: object = {}
+const baseGenesisState: object = {};
 
 export const GenesisState = {
-  encode(_: GenesisState, writer: Writer = Writer.create()): Writer {
-    return writer
+  encode(message: GenesisState, writer: Writer = Writer.create()): Writer {
+    if (message.params !== undefined) {
+      Params.encode(message.params, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
   },
 
   decode(input: Reader | Uint8Array, length?: number): GenesisState {
-    const reader = input instanceof Uint8Array ? new Reader(input) : input
-    let end = length === undefined ? reader.len : reader.pos + length
-    const message = { ...baseGenesisState } as GenesisState
+    const reader = input instanceof Uint8Array ? new Reader(input) : input;
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseGenesisState } as GenesisState;
     while (reader.pos < end) {
-      const tag = reader.uint32()
+      const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.params = Params.decode(reader, reader.uint32());
+          break;
         default:
-          reader.skipType(tag & 7)
-          break
+          reader.skipType(tag & 7);
+          break;
       }
     }
-    return message
+    return message;
   },
 
-  fromJSON(_: any): GenesisState {
-    const message = { ...baseGenesisState } as GenesisState
-    return message
+  fromJSON(object: any): GenesisState {
+    const message = { ...baseGenesisState } as GenesisState;
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromJSON(object.params);
+    } else {
+      message.params = undefined;
+    }
+    return message;
   },
 
-  toJSON(_: GenesisState): unknown {
-    const obj: any = {}
-    return obj
+  toJSON(message: GenesisState): unknown {
+    const obj: any = {};
+    message.params !== undefined &&
+      (obj.params = message.params ? Params.toJSON(message.params) : undefined);
+    return obj;
   },
 
-  fromPartial(_: DeepPartial<GenesisState>): GenesisState {
-    const message = { ...baseGenesisState } as GenesisState
-    return message
-  }
-}
+  fromPartial(object: DeepPartial<GenesisState>): GenesisState {
+    const message = { ...baseGenesisState } as GenesisState;
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromPartial(object.params);
+    } else {
+      message.params = undefined;
+    }
+    return message;
+  },
+};
 
-type Builtin = Date | Function | Uint8Array | string | number | undefined
+type Builtin = Date | Function | Uint8Array | string | number | undefined;
 export type DeepPartial<T> = T extends Builtin
   ? T
   : T extends Array<infer U>
@@ -53,4 +75,4 @@ export type DeepPartial<T> = T extends Builtin
   ? ReadonlyArray<DeepPartial<U>>
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>
+  : Partial<T>;

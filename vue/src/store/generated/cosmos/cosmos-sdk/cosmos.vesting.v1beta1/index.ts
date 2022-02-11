@@ -1,4 +1,4 @@
-import { txClient, queryClient, MissingWalletError } from './module'
+import { txClient, queryClient, MissingWalletError , registry} from './module'
 // @ts-ignore
 import { SpVuexError } from '@starport/vuex'
 
@@ -7,9 +7,10 @@ import { ContinuousVestingAccount } from "./module/types/cosmos/vesting/v1beta1/
 import { DelayedVestingAccount } from "./module/types/cosmos/vesting/v1beta1/vesting"
 import { Period } from "./module/types/cosmos/vesting/v1beta1/vesting"
 import { PeriodicVestingAccount } from "./module/types/cosmos/vesting/v1beta1/vesting"
+import { PermanentLockedAccount } from "./module/types/cosmos/vesting/v1beta1/vesting"
 
 
-export { BaseVestingAccount, ContinuousVestingAccount, DelayedVestingAccount, Period, PeriodicVestingAccount };
+export { BaseVestingAccount, ContinuousVestingAccount, DelayedVestingAccount, Period, PeriodicVestingAccount, PermanentLockedAccount };
 
 async function initTxClient(vuexGetters) {
 	return await txClient(vuexGetters['common/wallet/signer'], {
@@ -54,8 +55,10 @@ const getDefaultState = () => {
 						DelayedVestingAccount: getStructure(DelayedVestingAccount.fromPartial({})),
 						Period: getStructure(Period.fromPartial({})),
 						PeriodicVestingAccount: getStructure(PeriodicVestingAccount.fromPartial({})),
+						PermanentLockedAccount: getStructure(PermanentLockedAccount.fromPartial({})),
 						
 		},
+		_Registry: registry,
 		_Subscriptions: new Set(),
 	}
 }
@@ -74,16 +77,19 @@ export default {
 			state[query][JSON.stringify(key)] = value
 		},
 		SUBSCRIBE(state, subscription) {
-			state._Subscriptions.add(subscription)
+			state._Subscriptions.add(JSON.stringify(subscription))
 		},
 		UNSUBSCRIBE(state, subscription) {
-			state._Subscriptions.delete(subscription)
+			state._Subscriptions.delete(JSON.stringify(subscription))
 		}
 	},
 	getters: {
 				
 		getTypeStructure: (state) => (type) => {
 			return state._Structure[type].fields
+		},
+		getRegistry: (state) => {
+			return state._Registry
 		}
 	},
 	actions: {
@@ -104,7 +110,8 @@ export default {
 		async StoreUpdate({ state, dispatch }) {
 			state._Subscriptions.forEach(async (subscription) => {
 				try {
-					await dispatch(subscription.action, subscription.payload)
+					const sub=JSON.parse(subscription)
+					await dispatch(sub.action, sub.payload)
 				}catch(e) {
 					throw new SpVuexError('Subscriptions: ' + e.message)
 				}

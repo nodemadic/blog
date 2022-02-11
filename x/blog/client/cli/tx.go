@@ -17,6 +17,7 @@ var (
 
 const (
 	flagPacketTimeoutTimestamp = "packet-timeout-timestamp"
+	listSeparator              = ","
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -29,8 +30,8 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	// this line is used by starport scaffolding # 1
 	cmd.AddCommand(CmdCreatePost())
+	// this line is used by starport scaffolding # 1
 
 	return cmd
 }

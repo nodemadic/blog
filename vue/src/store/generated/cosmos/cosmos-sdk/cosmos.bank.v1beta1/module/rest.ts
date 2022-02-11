@@ -10,10 +10,7 @@
  */
 
 export interface ProtobufAny {
-  typeUrl?: string;
-
-  /** @format byte */
-  value?: string;
+  "@type"?: string;
 }
 
 export interface RpcStatus {
@@ -78,6 +75,17 @@ export interface V1Beta1Metadata {
    * displayed in clients.
    */
   display?: string;
+
+  /** Since: cosmos-sdk 0.43 */
+  name?: string;
+
+  /**
+   * symbol is the token symbol usually shown on exchanges (eg: ATOM). This can
+   * be the same as the display.
+   *
+   * Since: cosmos-sdk 0.43
+   */
+  symbol?: string;
 }
 
 /**
@@ -135,6 +143,13 @@ export interface V1Beta1PageRequest {
    * is set.
    */
   countTotal?: boolean;
+
+  /**
+   * reverse is set to true if results are to be returned in the descending order.
+   *
+   * Since: cosmos-sdk 0.43
+   */
+  reverse?: boolean;
 }
 
 /**
@@ -221,6 +236,13 @@ export interface V1Beta1QuerySupplyOfResponse {
 
 export interface V1Beta1QueryTotalSupplyResponse {
   supply?: V1Beta1Coin[];
+
+  /**
+   * pagination defines the pagination in the response.
+   *
+   * Since: cosmos-sdk 0.43
+   */
+  pagination?: V1Beta1PageResponse;
 }
 
 /**
@@ -424,7 +446,7 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title cosmos/bank/v1beta1/bank.proto
+ * @title cosmos/bank/v1beta1/authz.proto
  * @version version not set
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
@@ -443,6 +465,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.countTotal"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -460,12 +483,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @tags Query
    * @name QueryBalance
    * @summary Balance queries the balance of a single coin for a single account.
-   * @request GET:/cosmos/bank/v1beta1/balances/{address}/{denom}
+   * @request GET:/cosmos/bank/v1beta1/balances/{address}/by_denom
    */
-  queryBalance = (address: string, denom: string, params: RequestParams = {}) =>
+  queryBalance = (address: string, query?: { denom?: string }, params: RequestParams = {}) =>
     this.request<V1Beta1QueryBalanceResponse, RpcStatus>({
-      path: `/cosmos/bank/v1beta1/balances/${address}/${denom}`,
+      path: `/cosmos/bank/v1beta1/balances/${address}/by_denom`,
       method: "GET",
+      query: query,
       format: "json",
       ...params,
     });
@@ -484,6 +508,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       "pagination.offset"?: string;
       "pagination.limit"?: string;
       "pagination.countTotal"?: boolean;
+      "pagination.reverse"?: boolean;
     },
     params: RequestParams = {},
   ) =>
@@ -535,10 +560,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
    * @summary TotalSupply queries the total supply of all coins.
    * @request GET:/cosmos/bank/v1beta1/supply
    */
-  queryTotalSupply = (params: RequestParams = {}) =>
+  queryTotalSupply = (
+    query?: {
+      "pagination.key"?: string;
+      "pagination.offset"?: string;
+      "pagination.limit"?: string;
+      "pagination.countTotal"?: boolean;
+      "pagination.reverse"?: boolean;
+    },
+    params: RequestParams = {},
+  ) =>
     this.request<V1Beta1QueryTotalSupplyResponse, RpcStatus>({
       path: `/cosmos/bank/v1beta1/supply`,
       method: "GET",
+      query: query,
       format: "json",
       ...params,
     });

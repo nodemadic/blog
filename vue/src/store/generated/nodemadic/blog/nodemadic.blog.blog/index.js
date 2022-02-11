@@ -1,6 +1,9 @@
 import { txClient, queryClient, MissingWalletError, registry } from './module';
 // @ts-ignore
 import { SpVuexError } from '@starport/vuex';
+import { Params } from "./module/types/blog/params";
+import { Post } from "./module/types/blog/post";
+export { Params, Post };
 async function initTxClient(vuexGetters) {
     return await txClient(vuexGetters['common/wallet/signer'], {
         addr: vuexGetters['common/env/apiTendermint']
@@ -34,7 +37,12 @@ function getStructure(template) {
 }
 const getDefaultState = () => {
     return {
-        _Structure: {},
+        Params: {},
+        Posts: {},
+        _Structure: {
+            Params: getStructure(Params.fromPartial({})),
+            Post: getStructure(Post.fromPartial({})),
+        },
         _Registry: registry,
         _Subscriptions: new Set(),
     };
@@ -59,6 +67,18 @@ export default {
         }
     },
     getters: {
+        getParams: (state) => (params = { params: {} }) => {
+            if (!params.query) {
+                params.query = null;
+            }
+            return state.Params[JSON.stringify(params)] ?? {};
+        },
+        getPosts: (state) => (params = { params: {} }) => {
+            if (!params.query) {
+                params.query = null;
+            }
+            return state.Posts[JSON.stringify(params)] ?? {};
+        },
         getTypeStructure: (state) => (type) => {
             return state._Structure[type].fields;
         },
@@ -91,6 +111,38 @@ export default {
                     throw new SpVuexError('Subscriptions: ' + e.message);
                 }
             });
+        },
+        async QueryParams({ commit, rootGetters, getters }, { options: { subscribe, all } = { subscribe: false, all: false }, params, query = null }) {
+            try {
+                const key = params ?? {};
+                const queryClient = await initQueryClient(rootGetters);
+                let value = (await queryClient.queryParams()).data;
+                commit('QUERY', { query: 'Params', key: { params: { ...key }, query }, value });
+                if (subscribe)
+                    commit('SUBSCRIBE', { action: 'QueryParams', payload: { options: { all }, params: { ...key }, query } });
+                return getters['getParams']({ params: { ...key }, query }) ?? {};
+            }
+            catch (e) {
+                throw new SpVuexError('QueryClient:QueryParams', 'API Node Unavailable. Could not perform query: ' + e.message);
+            }
+        },
+        async QueryPosts({ commit, rootGetters, getters }, { options: { subscribe, all } = { subscribe: false, all: false }, params, query = null }) {
+            try {
+                const key = params ?? {};
+                const queryClient = await initQueryClient(rootGetters);
+                let value = (await queryClient.queryPosts(query)).data;
+                while (all && value.pagination && value.pagination.next_key != null) {
+                    let next_values = (await queryClient.queryPosts({ ...query, 'pagination.key': value.pagination.next_key })).data;
+                    value = mergeResults(value, next_values);
+                }
+                commit('QUERY', { query: 'Posts', key: { params: { ...key }, query }, value });
+                if (subscribe)
+                    commit('SUBSCRIBE', { action: 'QueryPosts', payload: { options: { all }, params: { ...key }, query } });
+                return getters['getPosts']({ params: { ...key }, query }) ?? {};
+            }
+            catch (e) {
+                throw new SpVuexError('QueryClient:QueryPosts', 'API Node Unavailable. Could not perform query: ' + e.message);
+            }
         },
         async sendMsgCreatePost({ rootGetters }, { value, fee = [], memo = '' }) {
             try {

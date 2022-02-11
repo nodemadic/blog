@@ -134,4 +134,36 @@ export class HttpClient {
  * @version version not set
  */
 export class Api extends HttpClient {
+    constructor() {
+        super(...arguments);
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryParams
+         * @summary Parameters queries the parameters of the module.
+         * @request GET:/nodemadic/blog/blog/params
+         */
+        this.queryParams = (params = {}) => this.request({
+            path: `/nodemadic/blog/blog/params`,
+            method: "GET",
+            format: "json",
+            ...params,
+        });
+        /**
+         * No description
+         *
+         * @tags Query
+         * @name QueryPosts
+         * @summary Queries a list of Posts items.
+         * @request GET:/nodemadic/blog/blog/posts
+         */
+        this.queryPosts = (query, params = {}) => this.request({
+            path: `/nodemadic/blog/blog/posts`,
+            method: "GET",
+            query: query,
+            format: "json",
+            ...params,
+        });
+    }
 }

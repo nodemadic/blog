@@ -1,12 +1,12 @@
-import { Reader, Writer } from 'protobufjs/minimal';
+import { Reader, Writer } from "protobufjs/minimal";
 export declare const protobufPackage = "nodemadic.blog.blog";
-/** this line is used by starport scaffolding # proto/tx/message */
 export interface MsgCreatePost {
     creator: string;
     title: string;
     body: string;
 }
 export interface MsgCreatePostResponse {
+    id: number;
 }
 export declare const MsgCreatePost: {
     encode(message: MsgCreatePost, writer?: Writer): Writer;
@@ -16,11 +16,11 @@ export declare const MsgCreatePost: {
     fromPartial(object: DeepPartial<MsgCreatePost>): MsgCreatePost;
 };
 export declare const MsgCreatePostResponse: {
-    encode(_: MsgCreatePostResponse, writer?: Writer): Writer;
+    encode(message: MsgCreatePostResponse, writer?: Writer): Writer;
     decode(input: Reader | Uint8Array, length?: number): MsgCreatePostResponse;
-    fromJSON(_: any): MsgCreatePostResponse;
-    toJSON(_: MsgCreatePostResponse): unknown;
-    fromPartial(_: DeepPartial<MsgCreatePostResponse>): MsgCreatePostResponse;
+    fromJSON(object: any): MsgCreatePostResponse;
+    toJSON(message: MsgCreatePostResponse): unknown;
+    fromPartial(object: DeepPartial<MsgCreatePostResponse>): MsgCreatePostResponse;
 };
 /** Msg defines the Msg service. */
 export interface Msg {

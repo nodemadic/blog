@@ -1,4 +1,4 @@
-import { Writer, Reader } from 'protobufjs/minimal';
+import { Writer, Reader } from "protobufjs/minimal";
 export declare const protobufPackage = "cosmos.base.query.v1beta1";
 /**
  * PageRequest is to be embedded in gRPC request messages for efficient
@@ -34,6 +34,12 @@ export interface PageRequest {
      * is set.
      */
     countTotal: boolean;
+    /**
+     * reverse is set to true if results are to be returned in the descending order.
+     *
+     * Since: cosmos-sdk 0.43
+     */
+    reverse: boolean;
 }
 /**
  * PageResponse is to be embedded in gRPC response messages where the
